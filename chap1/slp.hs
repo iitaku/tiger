@@ -42,18 +42,15 @@ maxarg (AssignStmt i e)     = maxarg_expr (0, e)
 maxarg (PrintStmt es)       = length es
 
 -- interpreter of Stmt
-type Env = [(String, Int)]
-
-assign :: Env -> String -> Int -> Env
-assign e s i | = 
-
+type Env = Map String Int
 
 interp_stmt :: (Env, Stmt) -> Env
 interp_stmt (env, CompoundStmt s1 s2) = interp_stmt (interp_stmt (env, s1), s2)
 interp_stmt (env, AssignStmt i e) = env
+interp_stmt (env, PrintStmt es) = env
 
 interp_expr :: (Env, Expr) -> Int
-interp_expr IdExpr Id = 
+interp_expr (env, IdExpr id) = 0
 
 interp :: Stmt -> ()
-interp prog = ()
+interp prog = interp_stmt (Data.Map.Tip, prog)
