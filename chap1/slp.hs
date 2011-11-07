@@ -44,13 +44,23 @@ maxarg (PrintStmt es)       = length es
 -- interpreter of Stmt
 type Env = Map String Int
 
-interp_stmt :: (Env, Stmt) -> Env
-interp_stmt (env, CompoundStmt s1 s2) = interp_stmt (interp_stmt (env, s1), s2)
-interp_stmt (env, AssignStmt i e) = env
-interp_stmt (env, PrintStmt es) = env
+interp_stmt :: (Env, Stmt) -> (Env, IO ())
+interp_stmt (env, CompoundStmt stmt1 stmt2) = (interp_stmt (interp_stmt (env, stmt1), stmt2), 
+interp_stmt (env, AssignStmt id expr) = (case Data.Map.lookup id env of 
+                                             Nothing  -> insert id expr env
+                                             Just _   -> insert id expr $ delete id env, return ()) --interp_stmt (env, PrintStmt exprs) = env
 
-interp_expr :: (Env, Expr) -> Int
-interp_expr (env, IdExpr id) = 0
+interp_expr :: (Env, Expr) -> (Int, Env, IO ())
+interp_expr (env, IdExpr id) = case Data.Map.lookup id env of
+                                   Just x -> x
+interp_expr (env, NumExpr int) = int
+interp_expr (env, OpExpr expr1 op expr2) = 
+    case op of
+        Plus -> interp_expr (env, expr1) + interp_expr(env, expr2)
+        Minus -> interp_expr (env, expr1) - interp_expr(env, expr2)
+        Times -> interp_expr (env, expr1) * interp_expr(env, expr2)
+        Div -> interp_expr (env, expr1) `div` interp_expr(env, expr2)
+interp_expr (env, EseqExpr stmt expr) =                                    
 
-interp :: Stmt -> ()
-interp prog = interp_stmt (Data.Map.Tip, prog)
+interp :: Stmt -> IO ()
+interp prog = snd interp_stmt (Data.Map.empty, prog)
