@@ -44,13 +44,13 @@ maxarg (PrintStmt es)       = length es
 -- interpreter of Stmt
 type Env = Map String Int
 
-interp_stmt :: (Env, Stmt) -> (Env, IO ())
-interp_stmt (env, CompoundStmt stmt1 stmt2) = (interp_stmt (interp_stmt (env, stmt1), stmt2), 
+interp_stmt :: (Env, Stmt) -> IO ()
+interp_stmt (env, CompoundStmt stmt1 stmt2) = interp_stmt (interp_stmt (env, stmt1)) stmt2
 interp_stmt (env, AssignStmt id expr) = (case Data.Map.lookup id env of 
                                              Nothing  -> insert id expr env
                                              Just _   -> insert id expr $ delete id env, return ()) --interp_stmt (env, PrintStmt exprs) = env
 
-interp_expr :: (Env, Expr) -> (Int, Env, IO ())
+interp_expr :: (Env, Expr) -> (Int, IO ())
 interp_expr (env, IdExpr id) = case Data.Map.lookup id env of
                                    Just x -> x
 interp_expr (env, NumExpr int) = int
