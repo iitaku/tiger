@@ -41,24 +41,30 @@ maxarg (CompoundStmt s1 s2) = maxarg_stmt (maxarg_stmt (0, s1), s2)
 maxarg (AssignStmt i e)     = maxarg_expr (0, e)
 maxarg (PrintStmt es)       = length es
 
--- interpreter of Stmt
 type Env = Map String Int
 
+-- interpreter of Stmt
+
 interp_stmt :: (Env, Stmt) -> (Env, IO ())
-interp_stmt (env0, CompoundStmt stmt1 stmt2) = let (env1, io1) = interp_stmt (env0, stmt1)
-                                                   (env2, io2) = interp_stmt (env1, stmt2)
-                                               in (env2, io1 >>= (\ _ -> io2))
-interp_stmt (env, AssignStmt id expr) = let (val1, env1, io1) = interp_expr (env, expr)
-                                        in (case Data.Map.lookup id env of 
-                                                Nothing  -> insert id val1 env1
-                                                Just _   -> insert id val1 $ delete id env1, io1)
+interp_stmt (env0, CompoundStmt stmt1 stmt2) = 
+    let (env1, io1) = interp_stmt (env0, stmt1)
+        (env2, io2) = interp_stmt (env1, stmt2)
+    in (env2, io1 >>= (\ _ -> io2))
+interp_stmt (env, AssignStmt id expr) = 
+    let (val1, env1, io1) = interp_expr (env, expr)
+    in (case Data.Map.lookup id env of 
+             Nothing  -> insert id val1 env1
+             Just _   -> insert id val1 $ delete id env1, io1)
 
-interp_stmt (env, PrintStmt (expr:[])) = let (val, env1, io1) =  interp_expr (env, expr)
-                                         in (env1, io1 >>= (\ _ -> print $ show $ val))
-interp_stmt (env, PrintStmt (expr:exprs)) = let (val, env1, io1) =  interp_expr (env, expr)
-                                                (env2, io2) = interp_stmt (env1, PrintStmt exprs)
-                                            in (env2, io1 >>= (\ _ -> print $ show $ val) >>= (\ _ -> io2))
+interp_stmt (env, PrintStmt (expr:[])) = 
+    let (val, env1, io1) =  interp_expr (env, expr)
+    in (env1, io1 >>= (\ _ -> print $ show $ val))
+interp_stmt (env, PrintStmt (expr:exprs)) = 
+    let (val, env1, io1) =  interp_expr (env, expr)
+        (env2, io2) = interp_stmt (env1, PrintStmt exprs)
+    in (env2, io1 >>= (\ _ -> print $ show $ val) >>= (\ _ -> io2))
 
+-- interpreter of Expr
 interp_expr :: (Env, Expr) -> (Int, Env, IO ())
 interp_expr (env, IdExpr id) = (case Data.Map.lookup id env of
                                      Just x -> x
@@ -72,9 +78,10 @@ interp_expr (env0, OpExpr expr0 op expr1) =
              Minus -> val1   -   val2
              Times -> val1   *   val2
              Div   -> val1 `div` val2, env2, io1 >>= (\ _ -> io2))
-interp_expr (env, EseqExpr stmt expr) = let (env1, io1) = interp_stmt (env, stmt)
-                                            (val, env2, io2) = interp_expr (env1, expr)
-                                        in (val, env2, io1 >>= (\ _ -> io2))
+interp_expr (env, EseqExpr stmt expr) = 
+    let (env1, io1) = interp_stmt (env, stmt)
+        (val, env2, io2) = interp_expr (env1, expr)
+    in (val, env2, io1 >>= (\ _ -> io2))
 
 interp :: Stmt -> IO ()
 interp prog = snd $ interp_stmt (Data.Map.empty, prog)
