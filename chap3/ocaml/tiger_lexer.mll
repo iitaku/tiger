@@ -28,6 +28,7 @@ rule tiger = parse
   | "for"               { FOR        }
   | "while"             { WHILE      }
   | "else"              { ELSE       }
+  | "then"              { THEN       }
   | "if"                { IF         }
   | "array"             { ARRAY      }
   | ":="                { ASSIGN     }
@@ -96,6 +97,7 @@ and tiger_string str = parse
         | FOR        -> printf "FOR, "
         | WHILE      -> printf "WHILE, "
         | ELSE       -> printf "ELSE, "
+        | THEN       -> printf "THEN, "
         | IF         -> printf "IF, "
         | ARRAY      -> printf "ARRAY, "
         | ASSIGN     -> printf "ASSIGN, "
