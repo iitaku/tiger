@@ -8,7 +8,7 @@
 let tiger_digit  = ['0'-'9']
 let tiger_digit3 = tiger_digit tiger_digit tiger_digit
 let tiger_escape = '\\'
-let tiger_noescape = _ # tiger_escape
+let tiger_ignore = '\n' | '\t' | ' '
 let tiger_id     = ['_' 'a'-'z' 'A'-'Z'] ['_' 'a'-'z' 'A'-'Z' '0'-'9']*
 
 rule tiger = parse
@@ -65,15 +65,15 @@ and tiger_comment = parse
   | "*/"                { decr comment_depth; match !comment_depth with 0 -> tiger lexbuf | _ -> tiger_comment lexbuf } 
   | _                   { tiger_comment lexbuf }
 and tiger_string str = parse
-  |  "\""                                       { STRING str }
-  | (tiger_escape 'n')                  as code { tiger_string (str ^ code) lexbuf }
-  | (tiger_escape 't')                  as code { tiger_string (str ^ code) lexbuf }
-  | (tiger_escape '^' _)                as code { tiger_string (str ^ code) lexbuf }
-  | (tiger_escape tiger_digit3)         as code { tiger_string (str ^ code) lexbuf }
-  | (tiger_escape '"')                  as code { tiger_string (str ^ code) lexbuf }
-  | (tiger_escape '\\')                 as code { tiger_string (str ^ code) lexbuf }
-  | (tiger_escape tiger_noescape* tiger_escape) { tiger_string  str         lexbuf }
-  | _                                   as c    { tiger_string (str ^ (Char.escaped c)) lexbuf }
+  |  "\""                                             { STRING str }
+  | (tiger_escape 'n')                        as code { tiger_string (str ^ code) lexbuf }
+  | (tiger_escape 't')                        as code { tiger_string (str ^ code) lexbuf }
+  | (tiger_escape '^' _)                      as code { tiger_string (str ^ code) lexbuf }
+  | (tiger_escape tiger_digit3)               as code { tiger_string (str ^ code) lexbuf }
+  | (tiger_escape '"')                        as code { tiger_string (str ^ code) lexbuf }
+  | (tiger_escape '\\')                       as code { tiger_string (str ^ code) lexbuf }
+  | (tiger_escape tiger_ignore+ tiger_escape)         { tiger_string  str         lexbuf }
+  | _                                         as c    { tiger_string (str ^ (Char.escaped c)) lexbuf }
 { 
     let rec lexing_tiger lexbuf tokens = 
         let token = tiger lexbuf in
