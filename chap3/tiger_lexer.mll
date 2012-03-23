@@ -128,11 +128,4 @@ and tiger_string str = parse
       match tokens with
         | [] -> ()
         | _  -> print_token (List.hd tokens); print_tokens (List.tl tokens)
-    
-    let main () =
-      let lexbuf = Lexing.from_channel stdin in
-      let tokens = List.rev (lexing_tiger lexbuf []) in
-      print_tokens tokens
-
-    let _ = Printexc.print main ()
 }
