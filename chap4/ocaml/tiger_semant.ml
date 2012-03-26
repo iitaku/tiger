@@ -30,4 +30,6 @@ and dec = TyDec  of symbol * symbol * pos
         | VarDec of var * symbol * pos
         | FunDec of (symbol * symbol) list * pos
 
+and ty = ArrayTy
+
 end

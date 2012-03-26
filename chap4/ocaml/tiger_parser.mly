@@ -23,29 +23,24 @@
 %left PLUS MINUS
 %left TIMES DIVIDE
 %start prog
-%type <unit> prog
+%type <Semant.expr> prog
 %%
 
 prog:
-  expr EOF { printf "prog\n%!" }
-;
+  expr EOF { $1 }
 decs:
-  | dec      { printf "decs(dec)\n%!" }
-  | dec decs { printf "decs(dec decs)\n%!" }
-;
+  | dec      { $1 }
+  | dec decs { $1 :: $2 }
 dec:
-  | tydec  { printf "dec(tydec)\n%!" }
-  | vardec { printf "dec(vardec)\n%!" }
-  | fundec { printf "dec(fundec)\n%!" }
-;
+  | tydec  { $1 }
+  | vardec { $1 }
+  | fundec { $1 }
 tydec:
-  | TYPE ID EQ ty { printf "tydec\n%!" }
-;
+  | TYPE ID EQ ty { Semant.TyDec $2 $4 }
 ty:
   | ID                     { printf "ty(id)\n%!" }
   | LBRACE tyfields RBRACE { printf "ty\n%!" }
   | ARRAY OF ID            { printf "ty(array)\n%!" }
-;
 tyfields:
   | epsilon                    { printf "tyfields(epsilon)\n%!"}
   | ID COLON ID                { printf "tyfileds\n%!" }
@@ -53,11 +48,9 @@ tyfields:
 vardec:
   | VAR ID ASSIGN expr          { printf "vardec(ASSIGN)\n%!" }
   | VAR ID COLON ID ASSIGN expr { printf "vardec(COLON ASSIGN)\n%!" }
-;
 fundec:
   | FUNCTION ID LPAREN tyfields RPAREN EQ expr { printf "fundec(%s)\n%!" $2 }
   | FUNCTION ID LPAREN tyfields RPAREN COLON ID EQ expr { printf "fundec(%s)\n%!" $2 }
-;
 expr: 
   | ID                                 { printf "expr(ID %s)\n%!" $1 }
   | lvalue                             { printf "expr(lvalue)\n%! "}
@@ -89,13 +82,11 @@ expr:
   | FOR ID ASSIGN expr TO expr DO expr { printf "expr(FOR)\n%!" }
   | BREAK                              { printf "expr(BREAK)\n%!" }
   | LET decs IN expseq END             { printf "expr(let)\n%!" }
-;
 lvalue:
   | ID DOT ID                          { printf "lvalue(DOT ID)\n%!" }
   | ID LBRACK expr RBRACK              { printf "lvalue(LBACK expr RBRACK)\n%!" }
   | lvalue DOT ID                          { printf "lvalue(DOT ID)\n%!" }
   | lvalue LBRACK expr RBRACK              { printf "lvalue(LBACK expr RBRACK)\n%!" }
-;
 args:
   | epsilon         { printf "args(epsilon)\n%!" }
   | expr            { printf "args(expr)\n%!" }
