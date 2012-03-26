@@ -1,5 +1,6 @@
 %{
   open Printf
+  open Tiger_semant
 
   let rec parse_error s = print_endline s
 %}
@@ -62,7 +63,6 @@ expr:
   | lvalue                             { printf "expr(lvalue)\n%! "}
   | NIL                                { printf "expr(NIL)\n%!" }
   | LPAREN RPAREN                      { printf "expr(())\n%!" }
-  | LPAREN expseq RPAREN               { printf "expr(expseq)\n%!" }
   | INT                                { printf "expr(INT %d)\n%!" $1 }
   | STRING                             { printf "expr(STRING %s)\n%!" $1 }
   | MINUS expr                         { printf "expr(UMINUS)\n%!" }
@@ -79,6 +79,7 @@ expr:
   | expr AND expr                      { printf "expr(AND)\n%!" }
   | expr OR expr                       { printf "expr(OR)\n%!" }
   | expr ASSIGN expr                   { printf "expr(ASSIGN)\n%!" }
+  | LPAREN expseq RPAREN               { printf "expr(expseq)\n%!" }
   | ID LBRACE record RBRACE            { printf "expr(record)\n%!" }
   | ID LPAREN args RPAREN              { printf "expr(%s())\n%!" $1}
   | ID LBRACK expr RBRACK OF expr      { printf "expr(expr)\n%!" }
