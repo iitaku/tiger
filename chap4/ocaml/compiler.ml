@@ -1,5 +1,5 @@
-open Tiger_lexer
-open Tiger_parser
+open Lexer
+open Parser
 
 let only_lexing () =
   let lexbuf = Lexing.from_channel stdin in

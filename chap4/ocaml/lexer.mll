@@ -1,6 +1,6 @@
 { 
   open Printf
-  open Tiger_parser
+  open Parser
   
   let comment_depth     = ref 0
 }

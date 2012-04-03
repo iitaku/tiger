@@ -1,6 +1,6 @@
 %{
   open Printf
-  open Tiger_semant
+  open Semant
 
   let rec parse_error s = print_endline s
 %}
@@ -36,7 +36,7 @@ dec:
   | vardec { $1 }
   | fundec { $1 }
 tydec:
-  | TYPE ID EQ ty { Semant.TyDec $2 $4 }
+  | TYPE ID EQ ty { Semant.  }
 ty:
   | ID                     { printf "ty(id)\n%!" }
   | LBRACE tyfields RBRACE { printf "ty\n%!" }

@@ -1,5 +1,6 @@
 _build
 log
+.*.swp
 *.cmo
 *.cmx
 *.byte
