@@ -1,8 +1,7 @@
-module Semant = 
-struct
-
 type pos = { line:int; column:int }
 type symbol = { name:string; value:int }
+
+type field = { name:symbol; escape:bool ref}
 
 type var = SimpleVar    of symbol       * pos
          | FieldVar     of var * symbol * pos
@@ -26,7 +25,7 @@ and expr = VarExpr     of var                                 * pos
 and operand = PlusOp | MinusOp | TimesOp | DivideOp
             | EqOp | NeqOp | LtOp | LeOp | GtOp | GeOp
 
-and dec = TyDec  of symbol * symbol * pos
+and dec = TyDec  of {name:symbol; ty:ty; pos:pos}
         | VarDec of var * symbol * pos
         | FunDec of fundec list * pos
 
@@ -34,8 +33,4 @@ and ty = NameTy of symbol * pos
        | RecordTy of field list * pos
        | ArrayTy of symbol * pos
 
-and field = { name:symbol; escape:bool ref}
-
 and fundec = { name:symbol; param:field list; result:(symbol * pos) option; body:expr; pos:pos }
-
-end

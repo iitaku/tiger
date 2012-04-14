@@ -29,14 +29,14 @@
 prog:
   expr EOF { $1 }
 decs:
-  | dec      { $1 }
-  | dec decs { $1 :: $2 }
+  | dec      { [$1] }
+  | dec decs {  $1 :: $2 }
 dec:
   | tydec  { $1 }
   | vardec { $1 }
   | fundec { $1 }
 tydec:
-  | TYPE ID EQ ty { Semant.  }
+  | TYPE ID EQ ty { Semant.TyDec {symbol=$2; ty=ty; pos=0 }  }
 ty:
   | ID                     { printf "ty(id)\n%!" }
   | LBRACE tyfields RBRACE { printf "ty\n%!" }
