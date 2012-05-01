@@ -38,3 +38,4 @@ and expr =     VarExpr of var                                 * pos
 
 and operand = PlusOp | MinusOp | TimesOp | DivideOp
             | EqOp | NeqOp | LtOp | LeOp | GtOp | GeOp
+

@@ -1,5 +1,6 @@
 %{
   open Printf
+  open Semant
 
   let rec parse_error s = print_endline s
 %}
@@ -28,8 +29,8 @@
 prog:
   expr EOF { $1 }
 decs:
-  | dec      { $1 }
-  | dec decs { $1 :: $2 }
+  | dec      { [$1] }
+  | dec decs {  $1 :: $2 }
 dec:
   | tydec  { $1 }
   | vardec { $1 }
